@@ -1,0 +1,10 @@
+{
+  "mediaTypes": {
+    "image": "image",
+    "video": "video",
+    "audio": "audio",
+    "values": [
+      "image", "video", "audio"
+    ]
+  }
+}
