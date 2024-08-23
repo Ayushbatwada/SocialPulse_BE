@@ -1,0 +1,21 @@
+{
+  "status": {
+    "active": "active",
+    "inactive": "inactive",
+    "values": ["active", "inactive"]
+  },
+
+  "postTypes": {
+    "blog": "blog",
+    "article": "article",
+    "values": ["blog", "article"]
+  },
+
+  "flowTypes": {
+    "root_comment": "root_comment",
+    "reply_comment": "reply_comment",
+    "blog": "blog",
+    "article": "article",
+    "values": ["blog", "article", "root_comment", "reply_comment"]
+  }
+}
