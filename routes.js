@@ -1,7 +1,7 @@
 const healthCheck = require('./server/utils/healthCheck');
-const postRouter = require('./server/posts/routes');
-const likesRouter = require('./server/likes/routes');
-const commentsRouter = require('./server/comments/routes');
+const postRouter = require('./server/social_interaction/posts/routes');
+const likesRouter = require('./server/social_interaction/likes/routes');
+const commentsRouter = require('./server/social_interaction/comments/routes');
 
 module.exports = (app) => {
     app.use('/healthCheck', healthCheck);
