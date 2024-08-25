@@ -44,6 +44,12 @@ function alreadyDislikedErrorMessage() {
     this.status = 'already_disliked'
 }
 
+function alreadyDeletedErrorMessage() {
+    this.code = 200;
+    this.message = 'User already deleted';
+    this.status = 'already_deleted'
+}
+
 module.exports = {
     serverError: responseForInternalServerError,
     payloadError: responseForPayloadIncorrectError,
@@ -52,5 +58,13 @@ module.exports = {
     genericFailureError: responseForGenericFailureError,
     unauthorisedUserResponse: responseForUnauthorisedUserError,
     alreadyLikedErrorMessage: alreadyLikedErrorMessage,
-    alreadyDislikedErrorMessage: alreadyDislikedErrorMessage
+    alreadyDislikedErrorMessage: alreadyDislikedErrorMessage,
+    alreadyDeletedErrorMessage: alreadyDeletedErrorMessage,
+    customLabels : {
+        totalDocs: 'total',
+        docs: 'data',
+        limit: 'limit',
+        page: 'page',
+        totalPages: 'pages'
+    }
 }

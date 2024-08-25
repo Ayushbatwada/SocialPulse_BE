@@ -1,14 +1,11 @@
 'use strict'
 
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const likesConfig = require('./config.json');
 const UserSchema = require('../userModel');
 
 const likeSchema = new mongoose.Schema({
-    createdBy: {
-        type: UserSchema,
-        required: true
-    },
     postId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
@@ -31,9 +28,18 @@ const likeSchema = new mongoose.Schema({
         type: String,
         default: likesConfig.status.active,
         enum: likesConfig.status.values
-    }
+    },
+    userInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    createdBy: {
+        type: UserSchema,
+        required: true
+    },
 }, {
     timestamps: true
 });
 
+likeSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model('likes', likeSchema);

@@ -6,9 +6,7 @@ const commentsController = require('./controller');
 const router = express.Router();
 
 router.post('/add/new', commentsController.addComment);
-router.put('/edit', commentsController.editComment);
-router.put('/root/all/get', commentsController.getAllRootComments);
-router.put('/reply/all/get', commentsController.getAllReplyComments);
+router.get('/all/get', commentsController.getAllComments);
 router.put('/delete', commentsController.deleteComment);
 
 module.exports = router;

@@ -35,6 +35,7 @@ module.exports = {
                 flowType : flowType,
                 postId : postId,
                 flowId : flowId,
+                userInfo: createdBy.userId,
                 status: likeConfig.status.active
             };
             const options = {
@@ -64,11 +65,13 @@ module.exports = {
     dislike: (body, callback) => {
         let response;
         const flowId = body.flowId;
+        const flowType = body.flowType;
         const createdBy = body.createdBy;
 
-        if (!createdBy || !sanityChecks.isValidMongooseId(createdBy.userId) || !sanityChecks.isValidMongooseId(flowId)) {
-            console.log('ERROR ::: Missing info in "dislike" service with info, postType: ' + postType +
-                '. createdBy: ' + JSON.stringify(createdBy) + '. postId: ' + postId + '. flowType: ' + flowType + '. flowId: ' + flowId);
+        if (!createdBy || !sanityChecks.isValidMongooseId(createdBy.userId) || !sanityChecks.isValidMongooseId(flowId) ||
+            !likeConfig.flowTypes.values.includes(flowType)) {
+            console.log('ERROR ::: Missing info in "dislike" service with info, flowType: ' + flowType +
+                '. createdBy: ' + JSON.stringify(createdBy) + '. flowId: ' + flowId);
             response = new responseData.payloadError();
             return callback(null, response);
         }
@@ -105,6 +108,88 @@ module.exports = {
             console.log('ERROR ::: found in "dislike" service catch block with err: ' + err);
             response = new responseData.serverError();
             return callback(null, response)
+        }
+    },
+
+    getFlowLikesList : (req, callback) => {
+        let response;
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        const flowId = req.query.fid
+
+        if (!sanityChecks.isValidMongooseId(flowId)) {
+            console.log('ERROR ::: Missing info in "getFlowLikesList" service with info, flowId: ' + flowId);
+            response = new responseData.payloadError();
+            return callback(null, response);
+        }
+
+        try {
+            const options = {
+                page: page,
+                limit: limit,
+                customLabels: responseData.customLabels
+            };
+            const filterQuery = {
+                status: likeConfig.status.active,
+                flowId: flowId
+            };
+            likeModel.paginate(filterQuery, options, (err, dbResp) => {
+                if (err) {
+                    console.log('ERROR ::: found in "getFlowLikesList" service error block with err: ' + err);
+                    response = new responseData.serverError();
+                    callback(null, response);
+                } else if (sanityChecks.isValidArray(dbResp.data)) {
+                    response = new responseData.successMessage();
+                    response = {...response, ...dbResp};
+                    callback(null, response);
+                } else {
+                    response = new responseData.notFoundError();
+                    return callback(null, response);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found in "getFlowLikesList" service catch block with err: ' + err);
+            response = new responseData.serverError();
+            callback(null, response);
+        }
+    },
+
+    getUsersFlowLikeInfo: (body, callback) => {
+        let response;
+        const userId = body.userId;
+        const flowIds = body.flowIds
+
+        if (!sanityChecks.isValidArray(flowIds) || !sanityChecks.isValidMongooseId(userId)) {
+            console.log('ERROR ::: Missing info in "getUsersFlowLikeInfo" service with info, flowIds: ' + flowIds +
+            '. userId: ' + userId);
+            response = new responseData.payloadError();
+            return callback(null, response);
+        }
+
+        try {
+            const filterQuery = {
+                status: likeConfig.status.active,
+                "createdBy.userId": userId,
+                flowId: { $in: flowIds },
+            };
+            likeModel.find(filterQuery, (err, dbResp) => {
+                if (err) {
+                    console.log('ERROR ::: found in "getUsersFlowLikeInfo" service error block with err: ' + err);
+                    response = new responseData.serverError();
+                    callback(null, response);
+                } else if (sanityChecks.isValidArray(dbResp)) {
+                    response = new responseData.successMessage();
+                    response.data = dbResp;
+                    callback(null, response);
+                } else {
+                    response = new responseData.notFoundError();
+                    return callback(null, response);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found in "getUsersFlowLikeInfo" service catch block with err: ' + err);
+            response = new responseData.serverError();
+            callback(null, response);
         }
     }
 }
