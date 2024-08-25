@@ -1,0 +1,14 @@
+{
+  "status": {
+    "active": "active",
+    "inactive": "inactive",
+    "deleted": "deleted",
+    "values": ["active", "inactive", "deleted"]
+  },
+
+  "postTypes": {
+    "blog": "blog",
+    "article": "article",
+    "values": ["blog", "article"]
+  }
+}
