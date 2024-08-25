@@ -52,5 +52,12 @@ module.exports = {
     genericFailureError: responseForGenericFailureError,
     unauthorisedUserResponse: responseForUnauthorisedUserError,
     alreadyLikedErrorMessage: alreadyLikedErrorMessage,
-    alreadyDislikedErrorMessage: alreadyDislikedErrorMessage
+    alreadyDislikedErrorMessage: alreadyDislikedErrorMessage,
+    customLabels : {
+        totalDocs: 'total',
+        docs: 'data',
+        limit: 'limit',
+        page: 'page',
+        totalPages: 'pages'
+    }
 }

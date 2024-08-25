@@ -35,6 +35,7 @@ module.exports = {
                 flowType : flowType,
                 postId : postId,
                 flowId : flowId,
+                userInfo: createdBy.userId,
                 status: likeConfig.status.active
             };
             const options = {
@@ -106,5 +107,48 @@ module.exports = {
             response = new responseData.serverError();
             return callback(null, response)
         }
-    }
+    },
+
+    getFlowLikesList : (req, callback) => {
+        let response;
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        const flowId = req.query.fid
+
+        if (!sanityChecks.isValidMongooseId(flowId)) {
+            console.log('ERROR ::: Missing info in :getFlowLikesList: service with info, flowId: ' + flowId);
+            response = new responseData.payloadError();
+            return callback(null, response);
+        }
+
+        try {
+            const options = {
+                page: page,
+                limit: limit,
+                customLabels: responseData.customLabels
+            };
+            const filterQuery = {
+                status: likeConfig.status.active,
+                flowId: flowId
+            };
+            likeModel.paginate(filterQuery, options, (err, dbResp) => {
+                if (err) {
+                    console.log('ERROR ::: found in "getFlowLikesList" service error block with err: ' + err);
+                    response = new responseData.serverError();
+                    callback(null, response);
+                } else if (sanityChecks.isValidArray(dbResp.data)) {
+                    response = new responseData.successMessage();
+                    response = {...response, ...dbResp};
+                    callback(null, response);
+                } else {
+                    response = new responseData.notFoundError();
+                    return callback(null, response);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found in "getFlowLikesList" service catch block with err: ' + err);
+            response = new responseData.serverError();
+            callback(null, response);
+        }
+    },
 }

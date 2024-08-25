@@ -40,5 +40,24 @@ module.exports = {
             response = new responseData.serverError();
             res.status(response.code).send(response);
         }
+    },
+
+    getFlowLikesInfo: (req, res) => {
+        let response;
+        try {
+            likeService.getFlowLikesList(req, (err, getFlowLikesInfoResponse) => {
+                if (err) {
+                    console.log('ERROR ::: found inside "getFlowLikesInfo" controller error block with err: ' + err);
+                    response = new responseData.serverError();
+                    res.status(response.code).send(response);
+                } else {
+                    res.status(getFlowLikesInfoResponse.code).send(getFlowLikesInfoResponse);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found inside "getFlowLikesInfo" controller catch block with err: ' + err);
+            response = new responseData.serverError();
+            res.status(response.code).send(response);
+        }
     }
 }
