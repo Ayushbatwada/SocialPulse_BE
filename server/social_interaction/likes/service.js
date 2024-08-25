@@ -65,11 +65,13 @@ module.exports = {
     dislike: (body, callback) => {
         let response;
         const flowId = body.flowId;
+        const flowType = body.flowType;
         const createdBy = body.createdBy;
 
-        if (!createdBy || !sanityChecks.isValidMongooseId(createdBy.userId) || !sanityChecks.isValidMongooseId(flowId)) {
-            console.log('ERROR ::: Missing info in "dislike" service with info, postType: ' + postType +
-                '. createdBy: ' + JSON.stringify(createdBy) + '. postId: ' + postId + '. flowType: ' + flowType + '. flowId: ' + flowId);
+        if (!createdBy || !sanityChecks.isValidMongooseId(createdBy.userId) || !sanityChecks.isValidMongooseId(flowId) ||
+            !likeConfig.flowTypes.values.includes(flowType)) {
+            console.log('ERROR ::: Missing info in "dislike" service with info, flowType: ' + flowType +
+                '. createdBy: ' + JSON.stringify(createdBy) + '. flowId: ' + flowId);
             response = new responseData.payloadError();
             return callback(null, response);
         }

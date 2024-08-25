@@ -122,7 +122,8 @@ module.exports = {
     editPost: (body, callback) => {
         let response;
         const postId = body.postId;
-        const factor = body.factor || 0;
+        const likeFactor = body.likeFactor || 0;
+        const commentFactor = body.commentFactor || 0;
 
         if (!sanityChecks.isValidMongooseId(postId)) {
             console.log('ERROR ::: Missing info in "deleteComment" service with info, postId: ' + postId);
@@ -135,7 +136,7 @@ module.exports = {
             status: postConfig.status.active
         };
         const updateQuery = {
-            likesCount: { $in: factor }
+            $inc: { likesCount: likeFactor, commentsCount: commentFactor },
         };
 
         try {
@@ -158,7 +159,6 @@ module.exports = {
             callback(null, response);
         }
     },
-
 
     deletePost: (body, callback) => {
         let response;

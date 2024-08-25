@@ -30,6 +30,14 @@ const commentSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             required: true
         },
+        likesCount: {
+            type: Number,
+            default: 0
+        },
+        hasUserLiked: {
+            type: Boolean,
+            default: false
+        },
         userInfo: {
             type: mongoose.Schema.Types.ObjectId,
             required: true

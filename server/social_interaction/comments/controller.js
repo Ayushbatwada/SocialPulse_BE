@@ -3,6 +3,7 @@
 const commentService = require('./service');
 const postService = require('../posts/service');
 const responseData = require('../../utils/responseData');
+const likeService = require("../likes/service");
 
 module.exports = {
     addComment: (req, res) => {
@@ -16,7 +17,7 @@ module.exports = {
                 } else if (addCommentResponse.code === 200 && addCommentResponse.status === 'success') {
                     const editPostBody = {
                         postId: req.body.flowId,
-                        factor: 1
+                        commentFactor: 1
                     }
                     postService.editPost(editPostBody, (err, editPostResponse) => {
                         if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
@@ -45,6 +46,31 @@ module.exports = {
                     console.log('ERROR ::: found inside "getAllRootComments" controller error block with err: ' + err);
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
+                } else if (getAllRootCommentsResponse.code === 200 && getAllRootCommentsResponse.status === 'success') {
+                    let flowIds = [];
+                    getAllRootCommentsResponse.data.forEach((comment) => {
+                        flowIds.push(comment._id);
+                    });
+                    const getUsersFlowLikeInfoBody = {
+                        flowIds: flowIds,
+                        userId: req.query.uid
+                    };
+                    likeService.getUsersFlowLikeInfo(getUsersFlowLikeInfoBody, (err, getUsersFlowLikeInfoResponse) => {
+                        if (getUsersFlowLikeInfoResponse.code === 200 && getUsersFlowLikeInfoResponse.status === 'success') {
+                            let commentIdsMap = {};
+                            getUsersFlowLikeInfoResponse.data.forEach((likeInfo) => {
+                                commentIdsMap[likeInfo.flowId] = true;
+                            });
+                            getAllRootCommentsResponse.data.forEach((post) => {
+                                if (commentIdsMap.hasOwnProperty(post._id)) {
+                                    post.hasUserLiked = true;
+                                }
+                            });
+                            res.status(getAllRootCommentsResponse.code).send(getAllRootCommentsResponse);
+                        } else {
+                            res.status(getAllRootCommentsResponse.code).send(getAllRootCommentsResponse);
+                        }
+                    });
                 } else {
                     res.status(getAllRootCommentsResponse.code).send(getAllRootCommentsResponse);
                 }
@@ -67,7 +93,7 @@ module.exports = {
                 } else if (deleteCommentResponse.code === 200 && deleteCommentResponse.status === 'success') {
                     const editPostBody = {
                         postId: req.body.flowId,
-                        factor: -1
+                        commentFactor: -1
                     }
                     postService.editPost(editPostBody, (err, editPostResponse) => {
                         if (editPostResponse.code === 200 && editPostResponse.status === 'success') {

@@ -1,7 +1,9 @@
 'use strict'
 
 const likeService = require('./service');
-const postService = require('../posts/service')
+const postService = require('../posts/service');
+const commentService = require('../comments/service');
+const likesConfig = require('./config.json');
 const responseData = require('../../utils/responseData');
 
 module.exports = {
@@ -14,17 +16,31 @@ module.exports = {
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
                 } else if (likeResponse.code === 200 && likeResponse.status === 'success') {
-                    const editPostBody = {
-                        postId: req.body.flowId,
-                        factor: 1
-                    }
-                    postService.editPost(editPostBody, (err, editPostResponse) => {
-                        if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
-                            console.log('INFO ::: found in editPost inside like with status: ' + editPostResponse.status);
-                        } else {
-                            console.log('INFO ::: found in editPost inside like with status: ' + editPostResponse.status);
+                    if (likesConfig.postTypes.values.includes(req.body.postType)) {
+                        const editPostBody = {
+                            postId: req.body.flowId,
+                            likeFactor: 1
                         }
-                    })
+                        postService.editPost(editPostBody, (err, editPostResponse) => {
+                            if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
+                                console.log('INFO ::: found in editPost inside like with status: ' + editPostResponse.status);
+                            } else {
+                                console.log('INFO ::: found in editPost inside like with status: ' + editPostResponse.status);
+                            }
+                        });
+                    } else {
+                        const editCommentBody = {
+                            postId: req.body.flowId,
+                            likeFactor: 1
+                        }
+                        commentService.editComment(editCommentBody, (err, editCommentResponse) => {
+                            if (editCommentResponse.code === 200 && editCommentResponse.status === 'success') {
+                                console.log('INFO ::: found in editPost inside like with status: ' + editCommentResponse.status);
+                            } else {
+                                console.log('INFO ::: found in editPost inside like with status: ' + editCommentResponse.status);
+                            }
+                        });
+                    }
                     res.status(likeResponse.code).send(likeResponse);
                 } else {
                     res.status(likeResponse.code).send(likeResponse);
@@ -46,17 +62,31 @@ module.exports = {
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
                 } else if (dislikeResponse.code === 200 && dislikeResponse.status === 'success') {
-                    const editPostBody = {
-                        postId: req.body.flowId,
-                        factor: -1
+                    if (likesConfig.postTypes.values.includes(req.body.flowType)) {
+                        const editPostBody = {
+                            postId: req.body.flowId,
+                            likeFactor: -1
+                        };
+                        postService.editPost(editPostBody, (err, editPostResponse) => {
+                            if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
+                                console.log('INFO ::: found in editPost inside dislike with status: ' + editPostResponse.status);
+                            } else {
+                                console.log('INFO ::: found in editPost inside dislike with status: ' + editPostResponse.status);
+                            }
+                        });
+                    } else {
+                        const editCommentBody = {
+                            postId: req.body.flowId,
+                            likeFactor: -1
+                        };
+                        commentService.editComment(editCommentBody, (err, editCommentResponse) => {
+                            if (editCommentResponse.code === 200 && editCommentResponse.status === 'success') {
+                                console.log('INFO ::: found in editPost inside dislike with status: ' + editCommentResponse.status);
+                            } else {
+                                console.log('INFO ::: found in editPost inside dislike with status: ' + editCommentResponse.status);
+                            }
+                        });
                     }
-                    postService.editPost(editPostBody, (err, editPostResponse) => {
-                        if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
-                            console.log('INFO ::: found in editPost inside dislike with status: ' + editPostResponse.status);
-                        } else {
-                            console.log('INFO ::: found in editPost inside dislike with status: ' + editPostResponse.status);
-                        }
-                    })
                     res.status(dislikeResponse.code).send(dislikeResponse);
                 } else {
                     res.status(dislikeResponse.code).send(dislikeResponse);
