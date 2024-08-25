@@ -119,6 +119,47 @@ module.exports = {
         }
     },
 
+    editPost: (body, callback) => {
+        let response;
+        const postId = body.postId;
+        const factor = body.factor || 0;
+
+        if (!sanityChecks.isValidMongooseId(postId)) {
+            console.log('ERROR ::: Missing info in "deleteComment" service with info, postId: ' + postId);
+            response = new responseData.payloadError();
+            return callback(null, response);
+        }
+
+        const filterQuery = {
+            _id: postId,
+            status: postConfig.status.active
+        };
+        const updateQuery = {
+            likesCount: { $in: factor }
+        };
+
+        try {
+            postModel.findOneAndUpdate(filterQuery, updateQuery, (err, dbResp) => {
+                if (err) {
+                    console.log('ERROR ::: found in "editPost" service error block with err: ' + err);
+                    response = new responseData.serverError();
+                    return callback(null, response);
+                } else if (sanityChecks.isValidObject(dbResp)) {
+                    response = new responseData.successMessage();
+                    return callback(null, response);
+                } else {
+                    response = new responseData.notFoundError();
+                    return callback(null, response);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found in "editPost" service catch block with err: ' + err);
+            response = new responseData.serverError();
+            callback(null, response);
+        }
+    },
+
+
     deletePost: (body, callback) => {
         let response;
         const postId = body.postId;

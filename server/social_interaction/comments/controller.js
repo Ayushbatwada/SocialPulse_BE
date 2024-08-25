@@ -1,7 +1,7 @@
 'use strict'
 
 const commentService = require('./service');
-const likeService = require('../likes/service');
+const postService = require('../posts/service');
 const responseData = require('../../utils/responseData');
 
 module.exports = {
@@ -13,6 +13,19 @@ module.exports = {
                     console.log('ERROR ::: found inside "addComment" controller error block with err: ' + err);
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
+                } else if (addCommentResponse.code === 200 && addCommentResponse.status === 'success') {
+                    const editPostBody = {
+                        postId: req.body.flowId,
+                        factor: 1
+                    }
+                    postService.editPost(editPostBody, (err, editPostResponse) => {
+                        if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
+                            console.log('INFO ::: found in editPost inside addComment with status: ' + editPostResponse.status);
+                        } else {
+                            console.log('INFO ::: found in editPost inside addComment with status: ' + editPostResponse.status);
+                        }
+                    })
+                    res.status(addCommentResponse.code).send(addCommentResponse);
                 } else {
                     res.status(addCommentResponse.code).send(addCommentResponse);
                 }
@@ -51,6 +64,19 @@ module.exports = {
                     console.log('ERROR ::: found inside "deleteComment" controller error block with err: ' + err);
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
+                } else if (deleteCommentResponse.code === 200 && deleteCommentResponse.status === 'success') {
+                    const editPostBody = {
+                        postId: req.body.flowId,
+                        factor: -1
+                    }
+                    postService.editPost(editPostBody, (err, editPostResponse) => {
+                        if (editPostResponse.code === 200 && editPostResponse.status === 'success') {
+                            console.log('INFO ::: found in editPost inside deleteComment with status: ' + editPostResponse.status);
+                        } else {
+                            console.log('INFO ::: found in editPost inside deleteComment with status: ' + editPostResponse.status);
+                        }
+                    });
+                    res.status(deleteCommentResponse.code).send(deleteCommentResponse);
                 } else {
                     res.status(deleteCommentResponse.code).send(deleteCommentResponse);
                 }
