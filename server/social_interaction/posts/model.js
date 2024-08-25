@@ -30,6 +30,10 @@ const postSchema = new mongoose.Schema({
             default: postsConfig.postTypes.blog,
             enum: postsConfig.postTypes.values
         },
+        hasUserLiked: {
+            type: Boolean,
+            default: false,
+        },
         likesCount: {
             type: Number,
             default: 0

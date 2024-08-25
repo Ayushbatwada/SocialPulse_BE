@@ -116,7 +116,7 @@ module.exports = {
         const flowId = req.query.fid
 
         if (!sanityChecks.isValidMongooseId(flowId)) {
-            console.log('ERROR ::: Missing info in :getFlowLikesList: service with info, flowId: ' + flowId);
+            console.log('ERROR ::: Missing info in "getFlowLikesList" service with info, flowId: ' + flowId);
             response = new responseData.payloadError();
             return callback(null, response);
         }
@@ -151,4 +151,43 @@ module.exports = {
             callback(null, response);
         }
     },
+
+    getUsersFlowLikeInfo: (body, callback) => {
+        let response;
+        const userId = body.userId;
+        const flowIds = body.flowIds
+
+        if (!sanityChecks.isValidArray(flowIds) || !sanityChecks.isValidMongooseId(userId)) {
+            console.log('ERROR ::: Missing info in "getUsersFlowLikeInfo" service with info, flowIds: ' + flowIds +
+            '. userId: ' + userId);
+            response = new responseData.payloadError();
+            return callback(null, response);
+        }
+
+        try {
+            const filterQuery = {
+                status: likeConfig.status.active,
+                "createdBy.userId": userId,
+                flowId: { $in: flowIds },
+            };
+            likeModel.find(filterQuery, (err, dbResp) => {
+                if (err) {
+                    console.log('ERROR ::: found in "getUsersFlowLikeInfo" service error block with err: ' + err);
+                    response = new responseData.serverError();
+                    callback(null, response);
+                } else if (sanityChecks.isValidArray(dbResp)) {
+                    response = new responseData.successMessage();
+                    response.data = dbResp;
+                    callback(null, response);
+                } else {
+                    response = new responseData.notFoundError();
+                    return callback(null, response);
+                }
+            });
+        } catch (err) {
+            console.log('ERROR ::: found in "getUsersFlowLikeInfo" service catch block with err: ' + err);
+            response = new responseData.serverError();
+            callback(null, response);
+        }
+    }
 }

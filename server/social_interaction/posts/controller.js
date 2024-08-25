@@ -1,8 +1,8 @@
 'use strict'
 
 const postService = require('./service');
+const likeService = require('../likes/service');
 const responseData = require("../../utils/responseData");
-const {getPostDetail} = require("./service");
 
 module.exports = {
     createPost: (req, res) => {
@@ -32,6 +32,31 @@ module.exports = {
                     console.log('ERROR ::: found inside "getAllPosts" controller error block with err: ' + err);
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
+                } else if (getAllPostsResponse.code === 200 && getAllPostsResponse.status === 'success') {
+                    let flowIds = [];
+                    getAllPostsResponse.data.forEach((post) => {
+                        flowIds.push(post._id);
+                    });
+                    const getUsersFlowLikeInfoBody = {
+                        flowIds: flowIds,
+                        userId: req.query.uid
+                    }
+                    likeService.getUsersFlowLikeInfo(getUsersFlowLikeInfoBody, (err, getUsersFlowLikeInfoResponse) => {
+                        if (getUsersFlowLikeInfoResponse.code === 200 && getUsersFlowLikeInfoResponse.status === 'success') {
+                            let postIdsMap = {};
+                            getUsersFlowLikeInfoResponse.data.forEach((likeInfo) => {
+                                postIdsMap[likeInfo.flowId] = true;
+                            });
+                            getAllPostsResponse.data.forEach((post) => {
+                                if (postIdsMap.hasOwnProperty(post._id)) {
+                                    post.hasUserLiked = true;
+                                }
+                            });
+                            res.status(getAllPostsResponse.code).send(getAllPostsResponse);
+                        } else {
+                            res.status(getAllPostsResponse.code).send(getAllPostsResponse);
+                        }
+                    });
                 } else {
                     res.status(getAllPostsResponse.code).send(getAllPostsResponse);
                 }
@@ -51,6 +76,19 @@ module.exports = {
                     console.log('ERROR ::: found inside "getPostDetail" controller error block with err: ' + err);
                     response = new responseData.serverError();
                     res.status(response.code).send(response);
+                } else if (getPostDetailResponse.code === 200 && getPostDetailResponse.status === 'success') {
+                    const getUsersFlowLikeInfoBody = {
+                        userId: req.query.uid,
+                        flowIds: [req.query.poid]
+                    }
+                    likeService.getUsersFlowLikeInfo(getUsersFlowLikeInfoBody, (err, getUsersFlowLikeInfoResponse) => {
+                        if (getUsersFlowLikeInfoResponse.code === 200 && getUsersFlowLikeInfoResponse.status === 'success') {
+                            getPostDetailResponse.data.hasUserLiked = true;
+                            res.status(getPostDetailResponse.code).send(getPostDetailResponse);
+                        } else {
+                            res.status(getPostDetailResponse.code).send(getPostDetailResponse);
+                        }
+                    });
                 } else {
                     res.status(getPostDetailResponse.code).send(getPostDetailResponse);
                 }
