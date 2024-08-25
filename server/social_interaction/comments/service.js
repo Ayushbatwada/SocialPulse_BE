@@ -125,7 +125,7 @@ module.exports = {
                     response = new responseData.serverError();
                     return callback(null, response);
                 } else if (sanityChecks.isValidObject(dbResp) && dbResp.status === commentConfig.status.deleted) {
-                    response = new responseData.alreadyCommentDeletedErrorMessage();
+                    response = new responseData.alreadyDeletedErrorMessage();
                     return callback(null, response);
                 } else if (sanityChecks.isValidObject(dbResp) && dbResp.status === commentConfig.status.active) {
                     response = new responseData.successMessage();
