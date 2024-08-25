@@ -2,7 +2,7 @@
   "status": {
     "active": "active",
     "deleted": "deleted",
-    "removed": "removed",,
+    "removed": "removed",
     "values": ["active", "deleted", "removed"]
   },
 

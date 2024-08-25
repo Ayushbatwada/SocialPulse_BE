@@ -44,6 +44,12 @@ function alreadyDislikedErrorMessage() {
     this.status = 'already_disliked'
 }
 
+function alreadyCommentDeletedErrorMessage() {
+    this.code = 200;
+    this.message = 'User already deleted comment';
+    this.status = 'already_deleted'
+}
+
 module.exports = {
     serverError: responseForInternalServerError,
     payloadError: responseForPayloadIncorrectError,
@@ -53,6 +59,7 @@ module.exports = {
     unauthorisedUserResponse: responseForUnauthorisedUserError,
     alreadyLikedErrorMessage: alreadyLikedErrorMessage,
     alreadyDislikedErrorMessage: alreadyDislikedErrorMessage,
+    alreadyCommentDeletedErrorMessage: alreadyCommentDeletedErrorMessage,
     customLabels : {
         totalDocs: 'total',
         docs: 'data',
