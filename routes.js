@@ -6,7 +6,7 @@ const commentsRouter = require('./server/social_interaction/comments/routes');
 module.exports = (app) => {
     app.use('/healthCheck', healthCheck);
 
-    app.use('v1/api/posts', postRouter);
-    app.use('v1/api/likes', likesRouter);
-    app.use('v1/api/comments', commentsRouter);
+    app.use('/v1/api/posts', postRouter);
+    app.use('/v1/api/likes', likesRouter);
+    app.use('/v1/api/comments', commentsRouter);
 }

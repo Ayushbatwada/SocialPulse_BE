@@ -1,3 +1,5 @@
+'use strict'
+
 const mongoose = require('mongoose');
 const likesConfig = require('./config.json');
 const UserSchema = require('../userModel');
@@ -32,6 +34,6 @@ const likeSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
-})
+});
 
 module.exports = mongoose.model('likes', likeSchema);

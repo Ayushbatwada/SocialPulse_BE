@@ -32,6 +32,18 @@ function responseForUnauthorisedUserError() {
     this.status = 'unauthorised';
 }
 
+function alreadyLikedErrorMessage() {
+    this.code = 200;
+    this.message = 'User already liked';
+    this.status = 'already_liked'
+}
+
+function alreadyDislikedErrorMessage() {
+    this.code = 200;
+    this.message = 'User already disliked';
+    this.status = 'already_disliked'
+}
+
 module.exports = {
     serverError: responseForInternalServerError,
     payloadError: responseForPayloadIncorrectError,
@@ -39,4 +51,6 @@ module.exports = {
     successMessage: responseForSuccessMessage,
     genericFailureError: responseForGenericFailureError,
     unauthorisedUserResponse: responseForUnauthorisedUserError,
+    alreadyLikedErrorMessage: alreadyLikedErrorMessage,
+    alreadyDislikedErrorMessage: alreadyDislikedErrorMessage
 }
